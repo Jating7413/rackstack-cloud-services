@@ -1,0 +1,25 @@
+---
+- hosts: me
+  tasks:
+      - lvol:
+          vg: "/dev/vgcloud"
+          lv: "yeah-lv1"
+          size: "1024"
+      - filesystem:
+         fstype: ext4
+         dev: "/dev/vgcloud/yeah-lv1"
+      - file:
+          path: "/object/yeah-lv1"
+          state: directory
+      - mount:
+          path: "/object/yeah-lv1"
+          src: "/dev/vgcloud/yeah-lv1"
+          fstype: ext4
+          state: mounted
+
+- hosts: yeah
+  tasks:
+     - file:
+         path: "/media/yeah"
+         state: directory
+     - shell: "mount -t nfs -o nfsvers=3 192.168.0.114:/object/yeah-lv1 /media/yeah"
