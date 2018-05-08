@@ -15,17 +15,19 @@ password = cgi.FormContent()['Password'][0]
 
 hostentry='[{2}]\n{0}    ansible_ssh_user=root    ansible_ssh_pass={1}\n'.format(ip,password,username)
 
-fh = open("/etc/ansible/hosts" , 'a')
+fh = open("/webcontent/database/inventory" , 'a')
 fh.write(hostentry)
 fh.close()
 
-ipa = commands.getoutput("sudo ifconfig enp0s3")
-ipAdd = ipa.split()
-ipaddress = ipAdd[5]
+ipa = commands.getoutput("sudo ifconfig wlan0")
+# ipAdd = ipa.split()
+# ipaddress = ipAdd[5]
+ipaddress = ipa.split()[6].split(":")[1]
+
 
 #entry='---\n- hosts: me\n  tasks:\n      - lvol:\n          vg: "/dev/vgcloud"\n          lv: "{0}-lv1"\n          size: "{1}"\n      - filesystem:\n         fstype: ext4\n         dev: "/dev/vgcloud/{0}-lv1"\n      - file:\n          path: "/object/{0}-lv1"\n          state: directory\n      - mount:\n          path: "/object/{0}-lv1"\n          src: "/dev/vgcloud/{0}-lv1"\n          fstype: ext4\n          state: mounted\n\n- hosts: {0}\n  tasks:\n     - file:\n         path: "/media/{0}"\n         state: directory\n     - mount:\n          path: "/media/{0}"\n          src: "{2}:/object/{0}-lv1"\n          fstype: nfs\n          state: mounted\n'.format(username,size,ipaddress)
 
-entry='---\n- hosts: me\n  tasks:\n      - lvol:\n          vg: "/dev/vgcloud"\n          lv: "{0}-lv1"\n          size: "{1}"\n      - filesystem:\n         fstype: ext4\n         dev: "/dev/vgcloud/{0}-lv1"\n      - file:\n          path: "/object/{0}-lv1"\n          state: directory\n      - mount:\n          path: "/object/{0}-lv1"\n          src: "/dev/vgcloud/{0}-lv1"\n          fstype: ext4\n          state: mounted\n\n- hosts: {0}\n  tasks:\n     - file:\n         path: "/media/{0}"\n         state: directory\n     - shell: "mount -t nfs -o nfsvers=3 {2}:/object/{0}-lv1 /media/{0}"'.format(username,size,ipaddress)
+entry='---\n- hosts: me\n  sudo: True\n  tasks:\n      - lvol:\n          vg: "/dev/vgcloud"\n          lv: "{0}-lv1"\n          size: "{1}"\n      - filesystem:\n         fstype: ext4\n         dev: "/dev/vgcloud/{0}-lv1"\n      - file:\n          path: "/object/{0}-lv1"\n          state: directory\n      - mount:\n          path: "/object/{0}-lv1"\n          src: "/dev/vgcloud/{0}-lv1"\n          fstype: ext4\n          fstab: /webcontent/database/mountEntry.txt\n          state: mounted\n\n- hosts: {0}\n  tasks:\n     - file:\n         path: "/media/{0}"\n         state: directory\n     - shell: "mount -t nfs -o nfsvers=3 {2}:/object/{0}-lv1 /media/{0}"'.format(username,size,ipaddress)
 
 
 #print(entry)
@@ -36,13 +38,13 @@ f.close()
 
 shareentry='/object/{0}-lv1         {1}(rw,no_root_squash)\n'.format(username,ip)
 
-fh = open("/etc/exports" , 'a')
+fh = open("/etc/exports" , 'a')	
 fh.write(shareentry)
 fh.close()
 
 commands.getstatusoutput("sudo systemctl restart nfs")
 
-new=commands.getstatusoutput("sudo ansible-playbook /webcontent/database/create.yml")
+new=commands.getstatusoutput("sudo ansible-playbook -i /webcontent/database/inventory /webcontent/database/create.yml")
 if new[0]==0:
 
 	print """

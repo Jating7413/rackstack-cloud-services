@@ -20,13 +20,15 @@ password = "c{}q{}dF{}axC{}qw2{}".format(a,b,c,d,e)
 
 #print password
 
-ip = commands.getoutput("sudo ifconfig enp0s3")
-ipAdd = ip.split()
-ipAddress = ipAdd[5]
+ip = commands.getoutput("ifconfig wlan0")
+# print(ip)
+# ipAdd = ip.split()
+# ipAddress = ipAdd[5]
+ipAddress = ip.split()[6].split(":")[1]
 
 #print ipAddress
 
-entry = "FROM centos_ssh:v2\n RUN echo 'root:{}' | chpasswd".format(password)
+entry = "FROM rastasheep/ubuntu-sshd\n RUN echo 'root:{}' | chpasswd".format(password)
 f = open("/paas/Dockerfile" , 'w')
 f.write(entry)
 f.close()

@@ -1,0 +1,15 @@
+[me]
+localhost  ansible_ssh_user=jatingupta ansible_ssh_pass=apple
+
+[apple]
+10.0.1.10    ansible_ssh_user=root    ansible_ssh_pass=apple
+[apple]
+10.0.1.10    ansible_ssh_user=root    ansible_ssh_pass=apple
+[apple]
+10.0.1.10    ansible_ssh_user=root    ansible_ssh_pass=apple
+[apple]
+10.0.1.10    ansible_ssh_user=root    ansible_ssh_pass=apple
+[banana]
+10.0.1.11    ansible_ssh_user=root    ansible_ssh_pass=yoyo
+[mango]
+10.0.1.12    ansible_ssh_user=root    ansible_ssh_pass=apple

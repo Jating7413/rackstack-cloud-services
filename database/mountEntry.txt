@@ -1,0 +1,1 @@
+/dev/vgcloud/mango-lv1 /object/mango-lv1 ext4 defaults 0 0

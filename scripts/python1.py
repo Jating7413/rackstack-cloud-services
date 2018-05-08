@@ -12,8 +12,8 @@ f = open("/webcontent/database/user1.py" , 'w')
 f.write(a)
 f.close()
 
-commands.getstatusoutput(" sudo chmod +x /webcontent/database/user1.py ")
-output =  commands.getoutput(" sudo python /webcontent/database/user1.py ")
+commands.getstatusoutput("chmod +x /webcontent/database/user1.py ")
+output =  commands.getoutput("python /webcontent/database/user1.py ")
 
 print """
 <html>

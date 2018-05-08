@@ -36,14 +36,16 @@ for i in e.keys():
 	elif e[i][0]=="ansible":
 		g = "ansible" 
 
-ip = commands.getoutput("sudo ifconfig enp0s3")
-ipAdd = ip.split()
-ipAddress = ipAdd[5]
+ip = commands.getoutput("sudo ifconfig wlan0")
+# ipAdd = ip.split()
+# ipAddress = ipAdd[5]
+ipAddress = ip.split()[6].split(":")[1]
+
 
 if os == "centos":	
-	commands.getstatusoutput("sudo cat > /custom/Dockerfile")
+	commands.getstatusoutput("touch /custom/Dockerfile")
 	entry = "RUN echo 'root:{}' | chpasswd\n".format(password)
-	commands.getoutput("echo 'FROM centos_ssh:v2' | sudo cat >> /custom/Dockerfile")
+	commands.getoutput("echo 'FROM jdeathe/centos-ssh' | sudo cat >> /custom/Dockerfile")
 	fil = open("/custom/Dockerfile" , 'a')
 	fil.write(entry)
 	fil.close()
@@ -218,9 +220,9 @@ if os == "centos":
 
 		
 if os == "ubuntu":	
-	commands.getstatusoutput("sudo cat > /custom/Dockerfile")
+	commands.getstatusoutput("touch /custom/Dockerfile")
 	entry = "RUN echo 'root:{}' | chpasswd\n".format(password)
-	commands.getoutput("echo 'FROM ubuntu:latest' | sudo cat >> /custom/Dockerfile")
+	commands.getoutput("echo 'FROM rastasheep/ubuntu-sshd' | sudo cat >> /custom/Dockerfile")
 	fil = open("/custom/Dockerfile" , 'a')
 	fil.write(entry)
 	fil.close()
@@ -231,13 +233,15 @@ if os == "ubuntu":
 	if c == "net-tools":
                 commands.getoutput("echo 'RUN sudo apt-get install net-tools -y' | sudo cat >> /custom/Dockerfile")
 	if d == "apache":
-                commands.getoutput("echo 'RUN sudo apt-get install apache2 -y' | sudo cat >> /custom/Dockerfile")
+				commands.getoutput("echo 'RUN apt-get update' | sudo cat >> /custom/Dockerfile")
+				commands.getoutput("echo 'RUN apt-get install apache2 -y' | sudo cat >> /custom/Dockerfile")
 	if f == "docker":
                 commands.getoutput("echo 'RUN sudo apt-get install docker -y' | sudo cat >> /custom/Dockerfile")
 	if g == "python":
                 commands.getoutput("echo 'RUN sudo apt-get install python -y' | sudo cat >> /custom/Dockerfile")
-	commands.getoutput("sudo docker build -t {}:{} /custom".format(imagename,version))
-	commands.getoutput("sudo rm -rf /custom/Dockerfile")
+	buildStatus = commands.getstatusoutput("sudo docker build -t {}:{} /custom".format(imagename,version))
+	if buildStatus[0] == 0:
+		commands.getoutput("sudo rm -rf /custom/Dockerfile")	
 	launchStatus = commands.getstatusoutput("sudo docker run -dit -p {}:22 --name {} {}:{}".format(portnum,conname,imagename,version))
 	if launchStatus[0]==0:
 		print """
@@ -390,7 +394,7 @@ if os == "ubuntu":
 		f.close()
 
 		g = open("/webcontent/database/whowhat.txt" , 'a')
-		g.write("{}:{}:#\n".format(name,conName))
+		g.write("{}:{}:#\n".format(name,conname))
 		g.close()
 
 if os == "debian":	
@@ -566,7 +570,7 @@ if os == "debian":
 		f.close()
 
 		g = open("/webcontent/database/whowhat.txt" , 'a')
-		g.write("{}:{}:#\n".format(name,conName))
+		g.write("{}:{}:#\n".format(name,conname))
 		g.close()
 
 
@@ -743,7 +747,7 @@ if os == "redhat":
 		f.close()
 
 		g = open("/webcontent/database/whowhat.txt" , 'a')
-		g.write("{}:{}:#\n".format(name,conName))
+		g.write("{}:{}:#\n".format(name,conname))
 		g.close()
 
 

@@ -26,14 +26,16 @@ g.close()
 p = port.split('\n')
 pa = p[0]
 
-ip = commands.getoutput("sudo ifconfig enp0s3")
-ipAdd = ip.split()
-ipAddress = ipAdd[5]
+ip = commands.getoutput("sudo ifconfig wlan0")
+# ipAdd = ip.split()
+# ipAddress = ipAdd[5]
+ipAddress = ip.split()[6].split(":")[1]
 
-launch = commands.getstatusoutput("sudo docker run -dit -p {}:80 --name {} apacheimg:v2".format(pa, na))
-status = commands.getstatusoutput("sudo docker cp /webcontent/database/data.txt {0}:/var/www/html/index.html".format(na))
+
+launch = commands.getstatusoutput("sudo docker run -dit -p {}:80 --name {} httpd".format(pa, na))
+status = commands.getstatusoutput("sudo docker cp /webcontent/database/data.txt {0}:/usr/local/apache2/htdocs/index.html".format(na))
 if status[0]==0:
-	commands.getstatusoutput("sudo docker exec {} /usr/sbin/httpd".format(na))
+	# commands.getstatusoutput("sudo docker exec {} /usr/sbin/httpd".format(na))
 	print """
 
 	<html>

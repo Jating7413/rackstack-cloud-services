@@ -1,2 +1,3 @@
-print("hey")	
-print("haha")	
+import os
+
+print(os.system("pwd"))
